@@ -1,6 +1,7 @@
 package com.spring.security.practice.springsecuritypractice.member.domain.entity;
 
 
+import com.spring.security.practice.springsecuritypractice.member.common.converter.MemberRoleConverter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +28,8 @@ public class Member {
     private String birthday;
     @Column(unique = true)
     private String nickname;
+
+    @Convert(converter = MemberRoleConverter)
+    private MemberRole memberRole;
 
 }
