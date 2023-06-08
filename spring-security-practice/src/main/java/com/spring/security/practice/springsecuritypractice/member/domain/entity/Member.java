@@ -3,16 +3,19 @@ package com.spring.security.practice.springsecuritypractice.member.domain.entity
 
 import com.spring.security.practice.springsecuritypractice.member.common.converter.MemberRoleConverter;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CollectionId;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "members")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class Member {
 
     @Id
@@ -29,7 +32,8 @@ public class Member {
     @Column(unique = true)
     private String nickname;
 
-    @Convert(converter = MemberRoleConverter)
-    private MemberRole memberRole;
+
+    @Convert()
+    private List<MemberRole> roles;
 
 }
