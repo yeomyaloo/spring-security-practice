@@ -2,6 +2,8 @@ package com.spring.security.practice.springsecuritypractice.config;
 
 
 import com.spring.security.practice.springsecuritypractice.auth.filter.CustomAuthenticationFilter;
+import com.spring.security.practice.springsecuritypractice.auth.filter.JwtAuthenticationFilter;
+import io.jsonwebtoken.Jwt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,18 +32,16 @@ public class SecurityConfiguration {
                 .anyRequest().permitAll()
                 .antMatchers("/myPage/**", "/manager/**").authenticated();
 
-        http.addFilterAt(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(jwtAuthenticationFilter());
         return http.build();
     }
 
-    private AbstractAuthenticationProcessingFilter customAuthenticationFilter() {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter("/members/login");
+    private UsernamePasswordAuthenticationFilter jwtAuthenticationFilter() {
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter();
 
-        customAuthenticationFilter.setAuthenticationManager();
-        customAuthenticationFilter.setAuthenticationSuccessHandler();
-        customAuthenticationFilter.setAuthenticationFailureHandler();
-
-        return customAuthenticationFilter();
+        jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
+        //jwtAuthenticationFilter.setAuthenticationFailureHandler();
+        return jwtAuthenticationFilter();
     }
 
     /**
