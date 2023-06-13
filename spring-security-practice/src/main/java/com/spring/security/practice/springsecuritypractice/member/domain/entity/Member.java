@@ -33,7 +33,4 @@ public class Member {
     private String nickname;
 
 
-    @Convert()
-    private List<MemberRole> roles;
-
 }

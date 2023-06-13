@@ -1,5 +1,8 @@
 package com.spring.security.practice.springsecuritypractice.member.domain.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -21,6 +24,9 @@ import java.util.stream.Collectors;
  * 2. redis 내에 데이터는 byte[] 형식으로 저장되어 있음
  * 3. byte[] -> object 변환 -> 객체 사용
  * */
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthMember implements Serializable {
 
     private String loginId;

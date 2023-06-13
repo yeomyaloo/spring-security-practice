@@ -2,14 +2,30 @@ package com.spring.security.practice.springsecuritypractice.member.controller.re
 
 
 import com.spring.security.practice.springsecuritypractice.member.domain.dto.request.MemberLoginRequest;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.Getter;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 @RestController
 @RequestMapping("/members")
 public class MemberRestController {
+
+    @GetMapping("/test")
+    public ResponseEntity addHeaderTest(){
+        HttpHeaders httpHeaders =new HttpHeaders();
+        httpHeaders.add("expired", "20000");
+        HttpEntity entity = new HttpEntity(httpHeaders);
+
+        return ResponseEntity.ok(entity);
+
+    }
+
+
 
 }

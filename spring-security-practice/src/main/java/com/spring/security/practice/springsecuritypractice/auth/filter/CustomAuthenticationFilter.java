@@ -1,39 +1,47 @@
 package com.spring.security.practice.springsecuritypractice.auth.filter;
 
 import com.spring.security.practice.springsecuritypractice.member.exception.InvalidLoginRequestException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.authentication.AuthenticationFilter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.util.StringUtils;
 
-import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 
+@Slf4j
 public class CustomAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/members/login", "POST");
     private boolean postOnly = true;
 
-    public CustomAuthenticationFilter(String defaultFilterProcessesUrl) {
+    private final AuthenticationManager authenticationManager;
+
+
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+
+        log.info("=============== Authentication Filter Start ===================");
+
         String loginId = request.getParameter("loginId");
         String password = request.getParameter("password");
+
+        log.info("=====================login Id========================= {}", loginId);
+        log.info("=====================password========================= {}", password);
 
         if (!this.postOnly && !request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
@@ -43,7 +51,9 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
             throw new InvalidLoginRequestException();
         }
 
-        Authentication authenticationToken = UsernamePasswordAuthenticationToken.unauthenticated(loginId, password);
-        return this.getAuthenticationManager().authenticate(authenticationToken);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginId, password);
+
+        return authenticationManager.authenticate(authenticationToken);
     }
+
 }

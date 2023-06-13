@@ -1,10 +1,10 @@
 package com.spring.security.practice.springsecuritypractice.auth.filter;
 
-import com.spring.security.practice.springsecuritypractice.auth.AuthKeyType;
 import com.spring.security.practice.springsecuritypractice.auth.jwt.JWTProvider;
 import com.spring.security.practice.springsecuritypractice.member.domain.dto.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -20,18 +20,16 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.spring.security.practice.springsecuritypractice.auth.AuthKeyType.*;
+import static com.spring.security.practice.springsecuritypractice.auth.AuthUtils.*;
 
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
-
-    private final AuthKeyType authKeyType;
-
+    private static final String TOKEN_EXPIRE = "Token-expire";
     private final JWTProvider jwtProvider;
-    private final RedisTemplate<String, Objects> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -40,8 +38,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String password = request.getParameter("password");
 
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginId, password);
+        //UsernamePasswordAuthenticationToken authenticationToken =new UsernamePasswordAuthenticationToken(loginId, password);
         UsernamePasswordAuthenticationToken unauthenticated = UsernamePasswordAuthenticationToken.unauthenticated(loginId, password);
 
         return getAuthenticationManager().authenticate(unauthenticated);
@@ -72,11 +69,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 expiredTime
         );
 
-        redisTemplate.opsForHash().put(USER_UUID, JWT_TOKEN.getValue(),authMember);
+        redisTemplate.opsForHash().put(USER_UUID, JWT.getValue(),authMember);
 
+        response.addHeader(AUTHORIZATION_HEADER, BEARER_PREFIX + accessToken);
+        response.addHeader(UUID_HEADER.getValue(), USER_UUID);
+        response.addHeader(TOKEN_EXPIRE, expiredTime);
 
 
     }
+
+
 
     private String getAccessToken(Authentication auth) {
         return jwtProvider.createAccessToken(
