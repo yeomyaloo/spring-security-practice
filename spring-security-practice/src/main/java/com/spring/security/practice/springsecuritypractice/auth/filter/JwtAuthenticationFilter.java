@@ -1,22 +1,21 @@
 package com.spring.security.practice.springsecuritypractice.auth.filter;
 
-import com.spring.security.practice.springsecuritypractice.auth.jwt.JWTProvider;
+import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtProvider;
 import com.spring.security.practice.springsecuritypractice.member.domain.dto.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String TOKEN_EXPIRE = "Token-expire";
-    private final JWTProvider jwtProvider;
+
+    @Resource(name = "jwtProvider")
+    private final JwtProvider jwtProvider;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override

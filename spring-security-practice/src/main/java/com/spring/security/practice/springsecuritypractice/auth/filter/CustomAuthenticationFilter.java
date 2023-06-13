@@ -20,7 +20,7 @@ import java.util.Objects;
 @Slf4j
 public class CustomAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/members/login", "POST");
+    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/auth/login", "POST");
     private boolean postOnly = true;
 
     private final AuthenticationManager authenticationManager;

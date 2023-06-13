@@ -3,9 +3,8 @@ package com.spring.security.practice.springsecuritypractice.config;
 
 import com.spring.security.practice.springsecuritypractice.auth.filter.CustomAuthenticationFilter;
 import com.spring.security.practice.springsecuritypractice.auth.filter.JwtAuthenticationFilter;
-import com.spring.security.practice.springsecuritypractice.auth.jwt.JWTProvider;
+import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtProvider;
 import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtFailureHandler;
-import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +20,8 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.annotation.Resource;
+
 
 /**
  * 스프링 시큐리티와 관련해서 환경 설정을 진행하는 클래스입니다.
@@ -30,7 +31,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private final JWTProvider jwtProvider;
+
+    @Resource(name = "jwtProvider")
+    private final JwtProvider jwtProvider;
     private final RedisTemplate<String,Object> redisTemplate;
 
     @Bean
