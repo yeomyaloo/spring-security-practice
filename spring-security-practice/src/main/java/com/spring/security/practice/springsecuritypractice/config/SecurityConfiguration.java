@@ -3,13 +3,17 @@ package com.spring.security.practice.springsecuritypractice.config;
 
 import com.spring.security.practice.springsecuritypractice.auth.filter.CustomAuthenticationFilter;
 import com.spring.security.practice.springsecuritypractice.auth.filter.JwtAuthenticationFilter;
+import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtAuthenticationProvider;
 import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtProvider;
 import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtFailureHandler;
+import com.spring.security.practice.springsecuritypractice.member.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,6 +40,7 @@ public class SecurityConfiguration {
     private final JwtProvider jwtProvider;
     private final RedisTemplate<String,Object> redisTemplate;
 
+    private final UserDetailsServiceImpl userDetailsService;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -64,7 +69,6 @@ public class SecurityConfiguration {
 
     private AbstractAuthenticationProcessingFilter customAuthenticationFilter() throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager(null));
-
         customAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler());
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         return customAuthenticationFilter;
@@ -73,7 +77,7 @@ public class SecurityConfiguration {
     private UsernamePasswordAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         UsernamePasswordAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
                 jwtProvider,redisTemplate);
-        jwtAuthenticationFilter.setFilterProcessesUrl("/members/login");
+        jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
         jwtAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler());
         return jwtAuthenticationFilter();
     }
@@ -94,9 +98,15 @@ public class SecurityConfiguration {
 
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.authenticationProvider(authenticationProvider());
+        return authenticationManagerBuilder.build();
+    }
 
-        return authenticationConfiguration.getAuthenticationManager();
-
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        return new JwtAuthenticationProvider(userDetailsService, bCryptPasswordEncoder());
     }
 }

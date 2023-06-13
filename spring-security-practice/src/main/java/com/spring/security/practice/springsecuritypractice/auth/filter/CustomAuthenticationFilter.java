@@ -43,6 +43,7 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         log.info("=====================login Id========================= {}", loginId);
         log.info("=====================password========================= {}", password);
 
+
         if (!this.postOnly && !request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
