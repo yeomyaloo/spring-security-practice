@@ -1,4 +1,4 @@
-package com.spring.security.practice.springsecuritypractice.config;
+package com.spring.security.practice.springsecuritypractice.auth.jwt;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 

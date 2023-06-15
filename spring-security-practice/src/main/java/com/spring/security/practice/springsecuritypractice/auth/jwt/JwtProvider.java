@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +28,7 @@ public class JwtProvider {
 
 
     private Key getSecretKey() {
-        byte[] keyBytes = jwtSecretKey.getBytes();
+        byte[] keyBytes = jwtSecretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -58,16 +59,25 @@ public class JwtProvider {
 
     }
 
-    public Date extractExpiredTime(String token){
+    public String extractLoginId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
 
-        return Jwts
-                .parser()
+    }
+
+    public Date extractExpiredTime(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSecretKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getExpiration();
-
-
     }
+
 
 
 }

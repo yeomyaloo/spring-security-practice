@@ -24,6 +24,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.spring.security.practice.springsecuritypractice.auth.AuthUtils.UUID_HEADER;
+
 @Slf4j
 public class CustomAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -88,6 +90,7 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
 
         response.addHeader(AUTHENTICATION, PREFIX_BEARER+accessToken);
         response.addHeader(EXPIRE, date.toString());
+        response.addHeader(UUID_HEADER.getValue(), USER_UUID);
 
         SecurityContextHolder.getContext().setAuthentication(authResult);
         log.info("=============================== successful authentication login id ================================= {}", authResult.getName());
