@@ -1,4 +1,4 @@
-package com.spring.security.practice.springsecuritypractice.auth.jwt;
+package com.spring.security.practice.springsecuritypractice.auth.jwt.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +23,7 @@ public class JwtFailureHandler implements AuthenticationFailureHandler {
 
         log.info("=============== Authentication Failure Handler Start ===================");
 
-        response.sendRedirect(url+"/members/login");
+        response.sendRedirect("/members/login");
 
         log.info("=============== Authentication Failure Handler end ===================");
 

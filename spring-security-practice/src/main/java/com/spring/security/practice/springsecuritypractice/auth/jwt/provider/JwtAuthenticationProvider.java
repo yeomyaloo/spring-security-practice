@@ -1,4 +1,4 @@
-package com.spring.security.practice.springsecuritypractice.auth.jwt;
+package com.spring.security.practice.springsecuritypractice.auth.jwt.provider;
 
 import com.spring.security.practice.springsecuritypractice.member.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;

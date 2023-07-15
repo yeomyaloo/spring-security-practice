@@ -1,11 +1,12 @@
 package com.spring.security.practice.springsecuritypractice.config;
 
 
-import com.spring.security.practice.springsecuritypractice.auth.filter.CustomAuthenticationFilter;
+import com.spring.security.practice.springsecuritypractice.auth.jwt.filter.CustomAuthenticationFilter;
 import com.spring.security.practice.springsecuritypractice.auth.filter.JwtAuthenticationFilter;
-import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtAuthenticationProvider;
+import com.spring.security.practice.springsecuritypractice.auth.filter.JwtTokenAuthenticationFilter;
+import com.spring.security.practice.springsecuritypractice.auth.jwt.provider.JwtAuthenticationProvider;
 import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtProvider;
-import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtFailureHandler;
+import com.spring.security.practice.springsecuritypractice.auth.jwt.handler.JwtFailureHandler;
 import com.spring.security.practice.springsecuritypractice.member.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,15 +14,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -35,7 +33,7 @@ import javax.annotation.Resource;
  */
 @Configuration
 @RequiredArgsConstructor
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfiguration {
 
 
@@ -63,13 +61,15 @@ public class SecurityConfiguration {
                 //.antMatchers("/myPage/**", "/manager/**")
                 //.authenticated();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
         http.addFilterAt(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        //http.addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtTokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
 
-    private AbstractAuthenticationProcessingFilter customAuthenticationFilter() throws Exception {
+    private CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager(null), jwtProvider);
         customAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler());
         customAuthenticationFilter.setFilterProcessesUrl("/auth/login");

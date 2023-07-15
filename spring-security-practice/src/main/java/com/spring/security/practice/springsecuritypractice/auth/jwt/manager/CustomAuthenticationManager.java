@@ -1,4 +1,4 @@
-package com.spring.security.practice.springsecuritypractice.auth.jwt;
+package com.spring.security.practice.springsecuritypractice.auth.jwt.manager;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;

@@ -1,8 +1,9 @@
-package com.spring.security.practice.springsecuritypractice.auth.filter;
+package com.spring.security.practice.springsecuritypractice.auth.jwt.filter;
 
 import com.spring.security.practice.springsecuritypractice.auth.jwt.JwtProvider;
 import com.spring.security.practice.springsecuritypractice.member.exception.InvalidLoginRequestException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
@@ -36,9 +38,9 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
     private final JwtProvider jwtProvider;
 
 
-    private static final String AUTHENTICATION = "Authentication ";
+    private static final String AUTHENTICATION = "Authorization";
     private static final String PREFIX_BEARER = "Bearer ";
-    private static final String EXPIRE = "Expire ";
+    private static final String EXPIRE = "ExpiredIime";
 
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager, JwtProvider jwtProvider) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
@@ -88,12 +90,12 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         String refreshToken = jwtProvider.createRefreshToken(loginId, roles);
         Date date = jwtProvider.extractExpiredTime(accessToken);
 
-        response.addHeader(AUTHENTICATION, PREFIX_BEARER+accessToken);
+        response.setHeader("Authorization", PREFIX_BEARER + accessToken);
+
         response.addHeader(EXPIRE, date.toString());
         response.addHeader(UUID_HEADER.getValue(), USER_UUID);
 
-        SecurityContextHolder.getContext().setAuthentication(authResult);
-        log.info("=============================== successful authentication login id ================================= {}", authResult.getName());
 
+        UsernamePasswordAuthenticationToken.authenticated(loginId, accessToken, authResult.getAuthorities());
     }
 }

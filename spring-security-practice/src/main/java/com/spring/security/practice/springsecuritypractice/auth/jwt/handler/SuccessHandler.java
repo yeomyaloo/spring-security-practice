@@ -1,4 +1,4 @@
-package com.spring.security.practice.springsecuritypractice.auth.jwt;
+package com.spring.security.practice.springsecuritypractice.auth.jwt.handler;
 
 
 import org.springframework.security.core.Authentication;
@@ -15,6 +15,6 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication auth) throws IOException, ServletException {
-
+        response.sendRedirect("/");
     }
 }
